@@ -36,7 +36,7 @@
 - 관련 ISSUE: 지원되지 않는 앱 타입으로 인한 빌드 테스트 실패  
 - 위치: `sbkube/commands/deploy.py`
 
-[ ] template 명령어에 install-yaml 타입 처리 로직 구현  
+[x] template 명령어에 install-yaml 타입 처리 로직 구현  
 - 관련 ISSUE: 지원되지 않는 앱 타입으로 인한 빌드 테스트 실패  
 - 위치: `sbkube/commands/template.py`
 
