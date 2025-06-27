@@ -42,7 +42,7 @@
 
 ## 테스트 환경 개선
 
-[ ] 테스트에서 임시 sources.yaml 파일 생성 로직 추가  
+[x] 테스트에서 임시 sources.yaml 파일 생성 로직 추가  
 - 관련 ISSUE: prepare 테스트 실패 - sources.yaml 파일 누락  
 - 위치: `tests/conftest.py` 또는 개별 테스트 파일
 
