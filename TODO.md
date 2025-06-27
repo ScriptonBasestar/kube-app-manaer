@@ -26,7 +26,7 @@
 
 ## 예제 설정 수정
 
-[ ] devops 예제에서 copy-app 타입을 지원되는 타입으로 변경  
+[x] devops 예제에서 copy-app 타입을 지원되는 타입으로 변경  
 - 관련 ISSUE: 지원되지 않는 앱 타입으로 인한 빌드 테스트 실패  
 - 위치: `examples/k3scode/devops/config.yaml`
 
