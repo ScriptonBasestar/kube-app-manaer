@@ -46,6 +46,6 @@
 - 관련 ISSUE: prepare 테스트 실패 - sources.yaml 파일 누락  
 - 위치: `tests/conftest.py` 또는 개별 테스트 파일
 
-[ ] 빌드 테스트에서 올바른 앱 타입 사용하도록 수정  
+[x] 빌드 테스트에서 올바른 앱 타입 사용하도록 수정  
 - 관련 ISSUE: 지원되지 않는 앱 타입으로 인한 빌드 테스트 실패  
 - 위치: `tests/test_build.py`
