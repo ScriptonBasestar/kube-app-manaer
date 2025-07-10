@@ -1,41 +1,154 @@
-# sbkube CLI 주요 기능
+# 🚀 SBKube CLI 주요 기능
 
-sbkube는 Kubernetes 애플리케이션의 배포 및 관리를 자동화하는 CLI 도구입니다. Helm 차트, YAML 매니페스트, Git 저장소 등을 활용하여 애플리케이션의 생명주기를 효율적으로 관리할 수 있도록 돕습니다.
+SBKube는 Kubernetes 애플리케이션의 배포 및 관리를 자동화하는 CLI 도구입니다. Helm 차트, YAML 매니페스트, Git 저장소 등을 활용하여 애플리케이션의 생명주기를 효율적으로 관리할 수 있도록 돕습니다.
 
-## 1. 핵심 명령어
+---
 
-- **`prepare`**: 애플리케이션 배포에 필요한 외부 소스(Helm 저장소, Git 저장소, Helm 차트 등)를 로컬 환경에 준비합니다.
-- **`build`**: 준비된 소스를 기반으로 Helm 차트, YAML 파일, 로컬 리소스 등을 빌드하여 배포 가능한 형태로 만듭니다. `pull-helm`, `pull-helm-oci`, `pull-git`, `copy-app`, `install-yaml` 타입을 지원합니다.
-- **`template`**: 빌드된 Helm 차트 및 YAML 파일들을 최종 매니페스트로 렌더링합니다. 실제 클러스터에 적용하기 전에 YAML 내용을 확인할 수 있습니다. `install-helm`과 `install-yaml` 타입을 지원합니다.
-- **`deploy`**: Helm 차트, YAML 파일, 또는 사용자 정의 스크립트(exec)를 Kubernetes 클러스터에 적용하여 애플리케이션을 배포합니다. `install-yaml` 타입은 빌드된 YAML 파일들을 직접 kubectl로 적용합니다.
-- **`upgrade`**: 이미 배포된 Helm 릴리스를 새로운 버전으로 업그레이드하거나, 존재하지 않을 경우 새로 설치합니다.
-- **`delete`**: 배포된 Helm 릴리스, Kubernetes 리소스(YAML), 또는 사용자 정의 스크립트(uninstall action)를 사용하여 애플리케이션을 클러스터에서 삭제합니다.
-- **`validate`**: 설정 파일(config.yaml/toml, sources.yaml/toml)의 유효성을 JSON 스키마 및 Pydantic 데이터 모델을 기반으로 검증합니다.
-- **`version`**: sbkube CLI의 현재 버전을 표시합니다.
+## 📋 핵심 명령어 (9개)
 
-## 2. 주요 기능 및 개선 사항
+### 🔧 소스 준비 및 빌드
+- **`prepare`** - 외부 소스(Helm 저장소, Git 저장소, OCI 차트)를 로컬 환경에 준비
+- **`build`** - 준비된 소스를 기반으로 배포 가능한 형태로 빌드
+- **`template`** - Helm 차트 및 YAML 파일들을 최종 매니페스트로 렌더링
 
-### 2.1. 안정적인 명령어 실행 및 에러 처리
-- `subprocess.run` 호출을 `sbkube.utils.common.run_command` 유틸리티 함수로 중앙화하여 명령어 실행의 일관성을 확보하고, 타임아웃 처리 및 에러 로깅을 개선했습니다.
+### 🚀 배포 및 관리  
+- **`deploy`** - Kubernetes 클러스터에 애플리케이션 배포
+- **`upgrade`** - 배포된 Helm 릴리스 업그레이드 또는 신규 설치
+- **`delete`** - 배포된 애플리케이션 및 리소스 삭제
 
-### 2.2. 유연한 애플리케이션 정의 및 관리
-- `AppInfoScheme`의 `type` 정의를 간소화하고 명확히 하여, `exec`, `install-helm`, `install-action`, `install-kustomize`, `install-yaml`, `copy-app`, `pull-helm`, `pull-helm-oci`, `pull-git`, `pull-http` 등 핵심 배포 및 소스 관리 타입에 집중합니다.
-- `install-action` 타입 앱에 대한 삭제 로직을 구현하여, `specs.uninstall.script`에 정의된 스크립트를 통해 애플리케이션을 깔끔하게 제거할 수 있습니다.
-- **`copy-app` 타입 지원**: 로컬 파일 및 디렉토리를 빌드 디렉토리로 복사하여 배포 준비를 할 수 있습니다. 설정 파일, 커스텀 매니페스트 등을 쉽게 포함할 수 있습니다.
-- **`install-yaml` 타입 지원**: Helm을 사용하지 않고 직접 YAML 매니페스트를 배포할 수 있습니다. `build` → `template` → `deploy` 전체 워크플로우를 지원하여 일관된 배포 프로세스를 제공합니다.
+### 🔍 검증 및 정보
+- **`validate`** - 설정 파일 유효성 검증 (JSON 스키마 및 Pydantic 기반)
+- **`version`** - CLI 현재 버전 표시
+- **`state`** - 배포 상태 관리 및 추적 *(신규)*
 
-### 2.3. Kubernetes OCI (Open Container Initiative) 지원 강화
-- `AppPullHelmOciSpec` 모델에 `registry_url` 필드를 추가하여 OCI 레지스트리에서 Helm 차트를 풀링하는 기능을 명확히 지원합니다.
+### 💡 기본 사용법
+```bash
+# 인수 없이 실행 시 Kubernetes 설정 정보 표시
+sbkube
 
-### 2.4. 전역 설정 및 옵션 처리 일관성
-- `--namespace`와 같은 전역 CLI 옵션 및 `config.yaml` 내의 전역 설정 처리 로직을 중앙화하여, 각 명령어에서 설정 우선순위를 일관되게 적용하고 코드 중복을 줄였습니다.
+# 기본 워크플로우
+sbkube prepare --base-dir . --app-dir config
+sbkube build --base-dir . --app-dir config  
+sbkube template --base-dir . --app-dir config --output-dir rendered/
+sbkube deploy --base-dir . --app-dir config --namespace <namespace>
+```
 
-### 2.5. 개발 및 유지보수 효율성 증대
-- 중복되거나 역할이 모호했던 `sbkube.utils.cli_check.py` 내의 `print_helm_connection_help` 함수를 제거하고, `validate_model.py` 스크립트를 `validate` CLI 명령어로 통합하여 코드 베이스를 간결하게 유지합니다.
+---
 
-### 2.6. 테스트 환경 개선
-- **향상된 테스트 인프라**: 모든 테스트에서 필요한 설정 파일(sources.yaml 등)을 자동으로 생성하는 fixture를 구현하여 테스트 안정성을 높였습니다.
-- **완전한 타입 커버리지**: `copy-app`과 `install-yaml`을 포함한 모든 지원 앱 타입에 대한 테스트 케이스를 확보했습니다.
+## 🎯 지원 애플리케이션 타입 (10개)
 
-## 3. 기타
-- `sbkube` 명령어를 인수 없이 실행하면 현재 Kubernetes 설정 정보를 상세하게 보여주어, 클러스터 연결 상태를 쉽게 파악할 수 있습니다.
+### 📦 소스 준비 타입
+- **`pull-helm`** - Helm 저장소에서 차트 다운로드
+- **`pull-helm-oci`** - OCI 레지스트리에서 Helm 차트 pull  
+- **`pull-git`** - Git 저장소 클론
+- **`pull-http`** - HTTP URL에서 파일 다운로드
+- **`copy-app`** - 로컬 파일/디렉토리 복사
+
+### 🚀 배포 실행 타입
+- **`install-helm`** - Helm 차트를 사용한 설치
+- **`install-yaml`** - 직접 YAML 매니페스트 배포
+- **`install-action`** - 사용자 정의 액션 스크립트 실행
+- **`install-kustomize`** - Kustomize 기반 배포
+- **`exec`** - 임의 명령어 실행
+
+---
+
+## 🏗️ 주요 아키텍처 특징
+
+### 🔄 다단계 워크플로우
+```
+prepare → build → template → deploy
+```
+각 단계는 독립적으로 실행 가능하며, 이전 단계의 결과를 다음 단계에서 활용합니다.
+
+### 📊 배포 상태 관리 *(신규)*
+- **SQLAlchemy 기반** 배포 상태 데이터베이스
+- **자동 상태 추적** 및 배포 히스토리 관리
+- **롤백 기능** 지원
+
+### 🎨 Rich 콘솔 출력
+- **컬러풀한 로깅** 및 진행 상황 표시
+- **테이블 형태** Kubernetes 설정 정보 출력
+- **상세/간단 모드** 지원 (`-v, --verbose`)
+
+### 🔧 강력한 에러 처리
+- **체계적인 예외 시스템** (`SbkubeError` 기반)
+- **명령어 도구 검증** (Helm, kubectl 자동 확인)
+- **타임아웃 처리** 및 재시도 로직
+
+---
+
+## ⚙️ 설정 시스템
+
+### 📄 설정 파일
+- **`config.yaml`** - 애플리케이션 정의 및 배포 스펙
+- **`sources.yaml`** - 외부 소스 정의 (Helm repos, Git repos)
+- **`values/`** - Helm 값 파일 디렉토리
+
+### 🔗 Pydantic 기반 검증
+- **강력한 타입 검증** 및 데이터 모델링
+- **JSON 스키마** 자동 생성 및 검증
+- **명확한 에러 메시지** 제공
+
+### 🌐 전역 옵션 지원
+```bash
+sbkube --kubeconfig ~/.kube/custom-config --context prod-cluster deploy
+sbkube --namespace monitoring --verbose template
+```
+
+---
+
+## 🔍 고급 기능
+
+### 🎯 BaseCommand 패턴
+모든 명령어가 공통 기반 클래스를 상속하여 일관된 동작을 제공합니다:
+- 설정 파일 로딩
+- 전역 옵션 처리  
+- 에러 핸들링
+- 로깅 시스템
+
+### 🔄 유연한 확장성
+- **새로운 앱 타입** 쉽게 추가 가능
+- **커스텀 명령어** 개발 지원
+- **플러그인 아키텍처** 준비
+
+### 📈 개발자 친화적
+- **명확한 코드 구조** (commands/, models/, utils/)
+- **포괄적인 테스트 커버리지**
+- **상세한 로깅** 및 디버깅 지원
+
+---
+
+## 🚀 실전 활용 시나리오
+
+### 📦 Helm 차트 배포
+```bash
+# Helm 저장소에서 차트 가져와서 배포
+sbkube prepare && sbkube build && sbkube deploy
+```
+
+### 📝 직접 YAML 배포  
+```bash
+# 커스텀 YAML 매니페스트 직접 배포
+sbkube build --app nginx-app && sbkube deploy --app nginx-app
+```
+
+### 🔄 Git 기반 배포
+```bash
+# Git 저장소에서 소스 가져와서 빌드 후 배포  
+sbkube prepare && sbkube build && sbkube template --output-dir ./rendered
+```
+
+### 📊 상태 관리
+```bash
+# 배포 상태 확인
+sbkube state list
+
+# 특정 배포 롤백
+sbkube state rollback --deployment-id <id>
+```
+
+---
+
+*자세한 명령어 사용법은 [commands.md](commands.md)를 참조하세요.*  
+*애플리케이션 타입별 상세 설명은 [application-types.md](application-types.md)를 확인하세요.*
